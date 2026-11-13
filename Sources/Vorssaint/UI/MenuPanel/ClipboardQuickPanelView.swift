@@ -7,6 +7,7 @@ import UniformTypeIdentifiers
 struct ClipboardQuickPanelView: View {
     @ObservedObject private var l10n = L10n.shared
     @ObservedObject private var history = ClipboardHistoryService.shared
+    @AppStorage(DefaultsKey.clipboardHistoryShowSourceAppIcons) private var showSourceAppIcons = false
     @FocusState private var searchFocused: Bool
     @AppStorage(DefaultsKey.liquidGlassEnabled) private var liquidGlassEnabled = false
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
@@ -545,6 +546,7 @@ struct ClipboardQuickPanelView: View {
 
     private func entryView(_ entry: ClipboardHistoryEntry, context: RenderContext) -> some View {
         QuickEntryView(layout: layout,
+                       showSourceAppIcons: showSourceAppIcons,
                        entry: entry,
                        pinboard: entry.pinboardID == nil ? nil : history.pinboard(for: entry),
                        tokens: context.tokens,
@@ -661,6 +663,7 @@ private struct QuickEntryView: View, Equatable {
     private static let cardCornerRadius: CGFloat = 13
     private static let cardHeaderHeight: CGFloat = 48
     let layout: ClipboardHistoryLayout
+    let showSourceAppIcons: Bool
     let entry: ClipboardHistoryEntry
     /// The entry's group, passed in so a renamed or recolored group redraws it.
     let pinboard: ClipboardPinboard?
@@ -697,6 +700,7 @@ private struct QuickEntryView: View, Equatable {
     // appearance, so it stays out of the comparison.
     static func == (lhs: QuickEntryView, rhs: QuickEntryView) -> Bool {
         lhs.layout == rhs.layout
+            && lhs.showSourceAppIcons == rhs.showSourceAppIcons
             && lhs.entry == rhs.entry
             && lhs.pinboard == rhs.pinboard
             && lhs.tokens == rhs.tokens
@@ -787,6 +791,13 @@ private struct QuickEntryView: View, Equatable {
     private var row: some View {
         HStack(alignment: .center, spacing: 9) {
             selectionButton
+            if showSourceAppIcons, let app = sourceApp {
+                Image(nsImage: app.icon)
+                    .resizable()
+                    .frame(width: 18, height: 18)
+                    .help(app.name)
+                    .accessibilityLabel(app.name)
+            }
             entryContent(entry)
             Spacer(minLength: 8)
             entryTrailing(entry, isHovered: isHovered)

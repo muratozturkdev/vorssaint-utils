@@ -18,6 +18,7 @@ struct ClipboardSettings: View {
     @AppStorage(DefaultsKey.clipboardHistoryIncludeImagesFiles) private var includeImagesFiles = true
     @AppStorage(DefaultsKey.clipboardLinkPreviews) private var linkPreviews = false
     @AppStorage(DefaultsKey.clipboardHistoryShortcutEnabled) private var shortcutEnabled = true
+    @AppStorage(DefaultsKey.clipboardHistoryShowSourceAppIcons) private var showSourceAppIcons = false
     @AppStorage(DefaultsKey.clipboardHistoryLayout) private var historyLayout = ClipboardHistoryLayout.list
     @AppStorage(DefaultsKey.notchClipboardWindow) private var historyOpensInIsland = true
     @AppStorage(DefaultsKey.clipboardHistoryMenuBarPreview) private var menuBarPreview = false
@@ -237,6 +238,7 @@ struct ClipboardSettings: View {
                 }
                 .pickerStyle(.segmented)
             }
+            Toggle(text.showSourceAppIconsInList, isOn: $showSourceAppIcons)
             Button {
                 ClipboardHistoryService.shared.showHistoryWindow()
             } label: {
